@@ -1,2 +1,3 @@
 ﻿User-agent: *
-Sitemap: https://shkaff.store/sitemap.xml
+Sitemap: /sitemap.xml
+Disallow: /main.html
