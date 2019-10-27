@@ -1,3 +1,4 @@
 ﻿User-agent: *
 Sitemap: https://shkaff.store/sitemap.xml
 Disallow: /main.html
+Disallow: /main
