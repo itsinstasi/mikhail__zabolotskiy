@@ -1593,6 +1593,8 @@ function refreshStories() {
 			checkbox.prop("checked", true);
 		}
 	});
+
+	resizeSwiper();
 }
 
 function refreshChoosen() {
@@ -1710,6 +1712,10 @@ function loadStories() {
 
 				setStoryBackground(element.title);
 			});
+
+			setTimeout(function(){
+				resizeSwiper();
+			}, 1000);
 		}
 	});
 }
@@ -1753,19 +1759,6 @@ function createStory(story) {
 	});
 }
 
-function deleteStory(story) {
-	if (key == null) {
-		return;
-	}
-
-	$.ajax({
-		url: "https://admapi.itsinsta.site/api/stories/" + story,
-		type: "DELETE",
-		dataType: 'json',
-		beforeSend: function(xhr) { xhr.setRequestHeader('key', key); }
-	});
-}
-
 function renameStory(story, newStory) {
 	if (key == null) {
 		return;
@@ -1774,6 +1767,35 @@ function renameStory(story, newStory) {
 	$.ajax({
 		url: "https://admapi.itsinsta.site/api/stories/" + story + "/rename/" + newStory,
 		type: "POST",
+		dataType: 'json',
+		beforeSend: function(xhr) { xhr.setRequestHeader('key', key); }
+	});
+}
+
+function resizeSwiper(){
+	swiper.update();
+}
+
+function deleteStory(storyTitle) {
+	tags[storyTitle] = [];
+
+	var story = $(".stories__slide").filter(function() {
+		return $(this).prop("title") == storyTitle;
+	}).first().parent();
+			
+	story.remove();
+
+	cleanupItems();
+
+	resizeSwiper();
+
+	if (key == null) {
+		return;
+	}
+
+	$.ajax({
+		url: "https://admapi.itsinsta.site/api/stories/" + storyTitle,
+		type: "DELETE",
 		dataType: 'json',
 		beforeSend: function(xhr) { xhr.setRequestHeader('key', key); }
 	});
@@ -1837,18 +1859,9 @@ $(document).ready(function() {
 
 			currentTitle = newTitle;
 		} else if (currentTitle != '' && newTitle == '') {
-			tags[currentTitle] = [];
-
-			var story = $(".stories__slide").filter(function() {
-				return $(this).prop("title") == currentTitle;
-			}).first();
-			
-			story.remove();
-
 			deleteStory(currentTitle);
 
 			currentTitle = '';
-
 			cleanupItems();
 		} else if (currentTitle == '' && newTitle != '') {
 			var stories = $(".stories__slide").filter(function() {
@@ -1871,14 +1884,6 @@ $(document).ready(function() {
 		if (currentTitle == '') {
 			return;
 		}
-
-		tags[currentTitle] = [];
-
-		var story = $(".stories__slide").filter(function() {
-			return $(this).prop("title") == currentTitle;
-		}).first();
-			
-		story.remove();
 
 		deleteStory(currentTitle);
 
